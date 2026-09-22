@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Betting Game</title>
+    <meta name="description" content="A fun and interactive betting game for classrooms.">
+    <!-- Google Fonts for Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- SETUP SCREEN -->
+        <section id="setup-screen" class="screen active">
+            <div class="glass-panel">
+                <h1><i class="fa-solid fa-coins gold"></i> High Stakes Trivia</h1>
+                <p class="subtitle">Set your rules, place your bets.</p>
+
+                <div class="form-group">
+                    <label for="start-coins">Starting Coins</label>
+                    <input type="number" id="start-coins" value="1000" min="100" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="num-games">Number of Questions</label>
+                    <input type="number" id="num-games" value="10" min="1" max="50">
+                </div>
+
+                <div class="action-buttons horizontal">
+                    <button id="import-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-upload"></i> Import
+                    </button>
+                    <input type="file" id="import-file" accept=".json" style="display: none;">
+
+                    <button id="export-template-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-download"></i> Export
+                    </button>
+
+                    <button id="open-create-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-pen"></i> Edit Qs
+                    </button>
+                </div>
+
+                <button id="start-game-btn" class="btn btn-primary pulse">
+                    Start Game <i class="fa-solid fa-play"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- GAME SCREEN -->
+        <section id="game-screen" class="screen">
+            <div class="game-header">
+                <div class="stats">
+                    <div class="stat-box">
+                        <i class="fa-solid fa-list-ol"></i> Question <span id="current-q-num">1</span>/<span
+                            id="total-q-num">10</span>
+                    </div>
+                    <div class="stat-box coins-display">
+                        <i class="fa-solid fa-coins gold"></i> <span id="current-coins">1000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="question-container glass-panel">
+                <h2 id="question-text">Loading question...</h2>
+            </div>
+
+            <div class="betting-controls glass-panel">
+                <h3>Place Your Bet</h3>
+                <div class="bet-input-wrapper">
+                    <button id="bet-decrease" class="btn-icon"><i class="fa-solid fa-minus"></i></button>
+                    <input type="number" id="current-bet" value="100" min="1">
+                    <button id="bet-increase" class="btn-icon"><i class="fa-solid fa-plus"></i></button>
+                    <button id="bet-all-in" class="btn btn-danger">ALL IN</button>
+                </div>
+                <div class="bet-slider-wrapper">
+                    <input type="range" id="bet-slider" min="1" max="1000" value="100">
+                </div>
+            </div>
+
+            <div class="options-grid" id="options-grid">
+                <!-- Options will be injected here -->
+            </div>
+
+            <button id="submit-answer-btn" class="btn btn-primary disabled" disabled>
+                Submit Answer
+            </button>
+        </section>
+
+        <!-- RESULT OVERLAY -->
+        <div id="result-overlay" class="overlay">
+            <div class="result-modal glass-panel">
+                <div id="result-icon"></div>
+                <h2 id="result-title">Result</h2>
+                <p id="result-message">Message</p>
+                <div class="coin-change">
+                    <span id="result-coin-diff">+0</span>
+                </div>
+                <p>New Balance: <i class="fa-solid fa-coins gold"></i> <span id="result-new-balance">0</span></p>
+                <button id="next-question-btn" class="btn btn-primary">Next Question</button>
+            </div>
+        </div>
+
+        <!-- GAME OVER SCREEN -->
+        <section id="game-over-screen" class="screen">
+            <div class="glass-panel text-center">
+                <h1 id="game-over-title">Game Over!</h1>
+                <p id="game-over-subtitle">Here is how you did:</p>
+
+                <div class="final-score">
+                    <i class="fa-solid fa-coins gold giant-icon"></i>
+                    <h2 id="final-coins">0</h2>
+                </div>
+
+                <div class="action-buttons vertical">
+                    <button id="play-again-btn" class="btn btn-primary pulse">
+                        <i class="fa-solid fa-rotate-right"></i> Play Again
+                    </button>
+                    <button id="export-results-btn" class="btn btn-secondary">
+                        <i class="fa-solid fa-file-export"></i> Export Questions
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CREATE QUESTION SCREEN -->
+        <section id="create-screen" class="screen">
+            <div class="glass-panel">
+                <h2><i class="fa-solid fa-pen"></i> Manage Questions</h2>
+                
+                <div class="question-list-container" id="question-list-container">
+                    <!-- List of questions will be injected here -->
+                </div>
+
+                <h3>Add New Question</h3>
+                <div class="form-group">
+                    <label>Question Text</label>
+                    <input type="text" id="new-q-text" placeholder="e.g. What is 2 + 2?">
+                </div>
+                
+                <div class="form-group">
+                    <label>Option A</label>
+                    <input type="text" id="new-q-opt-a" placeholder="Option A">
+                </div>
+                <div class="form-group">
+                    <label>Option B</label>
+                    <input type="text" id="new-q-opt-b" placeholder="Option B">
+                </div>
+                <div class="form-group">
+                    <label>Option C</label>
+                    <input type="text" id="new-q-opt-c" placeholder="Option C">
+                </div>
+                <div class="form-group">
+                    <label>Option D</label>
+                    <input type="text" id="new-q-opt-d" placeholder="Option D">
+                </div>
+                
+                <div class="form-group">
+                    <label>Correct Answer</label>
+                    <select id="new-q-answer">
+                        <option value="0">Option A</option>
+                        <option value="1">Option B</option>
+                        <option value="2">Option C</option>
+                        <option value="3">Option D</option>
+                    </select>
+                </div>
+
+                <div class="action-buttons horizontal">
+                    <button id="add-q-btn" class="btn btn-primary">Add</button>
+                    <button id="close-create-btn" class="btn btn-secondary">Done</button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>
